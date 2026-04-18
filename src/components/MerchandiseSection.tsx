@@ -6,25 +6,25 @@ const MerchandiseSection = () => {
       <div className="flex items-end justify-between mb-8">
         <div>
           <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">
-            Style n Tunes Merch
+            Premium Event Packages
           </h2>
           <p className="font-body text-sm text-muted-foreground mt-1">
-            Exclusive in-house apparel & lifestyle drops
+            Exclusive event management & tailored experiences
           </p>
         </div>
         <Link
           to="/products"
           className="font-body text-sm font-medium text-foreground underline underline-offset-4 hover:text-muted-foreground transition-colors"
         >
-          View All
+          View Directory
         </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { title: "T-Shirts", desc: "Premium cotton tees with bold graphics", soon: true },
-          { title: "Hoodies & Sweats", desc: "Heavyweight fleece for every season", soon: true },
-          { title: "Caps & Beanies", desc: "Headwear to complete your fit", soon: true },
+          { title: "Full Setup & Decor", desc: "Transform any space with our breathtaking designs", soon: true },
+          { title: "Elite Catering", desc: "Unforgettable dining experiences for you and your guests", soon: true },
+          { title: "Entertainment & Sound", desc: "Top-tier DJs, artists, and flawless audio setups", soon: true },
         ].map((item) => (
           <div
             key={item.title}

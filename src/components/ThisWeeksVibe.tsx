@@ -50,75 +50,39 @@ const ThisWeeksVibe = () => {
         </div>
       </div>
 
-      {/* Tracks mini-player */}
-      {displayTracks.length > 0 && (
-        <div className="flex gap-3 mb-8 overflow-x-auto scrollbar-hide pb-2">
-          {displayTracks.map((track) => {
-            const artist = artists.find((a) => a.id === track.artist_id);
-            const isActive = currentTrack?.id === track.id;
-            return (
-              <button
-                key={track.id}
-                onClick={() => {
-                  if (isActive) { if (isPlaying) pause(); else resume(); }
-                  else {
-                    play({ ...track, artistName: artist?.name || "" }, displayTracks.map((t) => ({
-                      ...t, artistName: artists.find((a) => a.id === t.artist_id)?.name || "",
-                    })));
-                  }
-                }}
-                className={`flex items-center gap-3 flex-shrink-0 px-4 py-3 border transition-colors ${
-                  isActive ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"
-                }`}
-              >
-                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                  {track.cover_url ? (
-                    <img src={resolveImage(track.cover_url)} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-secondary flex items-center justify-center"><Music size={12} /></div>
-                  )}
-                </div>
-                <div className="text-left min-w-0">
-                  <p className="font-body text-xs font-medium truncate">{track.title}</p>
-                  <p className={`font-body text-[10px] truncate ${isActive ? "text-background/60" : "text-muted-foreground"}`}>{artist?.name}</p>
-                </div>
-                {isActive && isPlaying ? (
-                  <div className="flex items-end gap-[2px] h-3 ml-2">
-                    {[0.6, 1, 0.4].map((h, i) => (
-                      <div key={i} className="w-[2px] bg-current rounded-full animate-pulse" style={{ height: `${h * 100}%`, animationDelay: `${i * 150}ms` }} />
-                    ))}
-                  </div>
-                ) : (
-                  <Play size={12} className="ml-2 flex-shrink-0" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
       {/* Products */}
       <div ref={scrollRef} className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1">
-        {vibeProducts.map((product) => (
-          <div key={product.id} className="min-w-[220px] md:min-w-[260px] flex-shrink-0 group">
-            <Link to={`/product/${product.id}`}>
-              <div className="aspect-square bg-secondary overflow-hidden mb-3">
-                <img
-                  src={resolveImage(product.image_url)}
-                  alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
+        {vibeProducts.map((product) => {
+          const hasImage = product.image_url && product.image_url !== "default-avatar.png";
+          
+          return (
+          <div key={product.id} className="w-[200px] md:w-[240px] flex-shrink-0 group">
+            <Link to={`/product/${product.id}`} className="block h-full">
+              <div className="h-[180px] bg-secondary overflow-hidden mb-3 border border-border">
+                {hasImage ? (
+                  <img
+                    src={product.image_url.startsWith("http") ? product.image_url : `http://localhost:3005${product.image_url}`}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-muted transition-transform duration-500 group-hover:scale-105">
+                     <span className="text-6xl text-muted-foreground/30 font-display font-bold uppercase">
+                       {product.name.charAt(0)}
+                     </span>
+                  </div>
+                )}
               </div>
               <h3 className="font-body text-sm font-medium text-foreground line-clamp-1">{product.name}</h3>
               <p className="font-body text-xs text-muted-foreground">{product.subtitle}</p>
               <div className="flex items-center gap-2 mt-1">
-                <p className="font-body text-sm font-semibold text-foreground">KSH {product.price.toLocaleString()}</p>
+                <p className="font-body text-sm font-semibold text-foreground">KSH {product.price?.toLocaleString()}</p>
                 <span className="font-body text-[10px] text-muted-foreground">🎧 {vibeData.subtitle}</span>
               </div>
             </Link>
           </div>
-        ))}
+        )})}
       </div>
     </section>
   );

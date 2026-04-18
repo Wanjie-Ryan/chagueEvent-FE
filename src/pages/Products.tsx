@@ -25,91 +25,75 @@ const shuffleArray = <T,>(arr: T[]): T[] => {
   return shuffled;
 };
 
-const CATEGORY_ORDER = ["All", "Sneakers", "Football Boots", "Boots", "Clogs", "Loafers", "Slides", "Clothing", "Watches", "Accessories"];
+const CATEGORY_ORDER = ["All", "Photography", "Catering", "Decor", "Entertainment", "Venue", "Other"];
 
 const ITEMS_PER_PAGE = 24;
 
 const Products = () => {
   const [searchParams] = useSearchParams();
-  const categoryFromUrl = searchParams.get("category") || "";
+  const categoryFromUrl = searchParams.get("category");
 
   useSEO({
-    title: categoryFromUrl ? `${categoryFromUrl} — Shop Style n Tunes` : "Shop All Products | Style n Tunes",
-    description: categoryFromUrl
-      ? `Browse ${categoryFromUrl.toLowerCase()} at Style n Tunes. Bold streetwear, free delivery across Kenya.`
-      : "Browse sneakers, boots, clothing, watches & more at Style n Tunes. Free delivery across Kenya.",
-    canonical: `https://stylentunes.com/products${categoryFromUrl ? `?category=${categoryFromUrl}` : ""}`,
+    title: categoryFromUrl ? `${categoryFromUrl} — Service Directory` : "All Services | Chagua Event",
+    description: "Browse all event service providers, from photography to catering.",
+    canonical: `https://chaguaevent.com/products${categoryFromUrl ? `?category=${categoryFromUrl}` : ""}`,
   });
 
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState(
+    categoryFromUrl ? categoryFromUrl.charAt(0).toUpperCase() + categoryFromUrl.slice(1) : "All"
+  );
   const [searchQuery, setSearchQuery] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("default");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
+  
+  const globalMin = 0;
+  const globalMax = 100000;
+  const [priceRange, setPriceRange] = useState<[number, number]>([globalMin, globalMax]);
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState<[number, number]>([globalMin, globalMax]);
+  
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const { addItem } = useCart();
-  const { data: allProducts = [], isLoading } = useProducts();
 
-  // Compute global min/max price
-  const [globalMin, globalMax] = useMemo(() => {
-    if (allProducts.length === 0) return [0, 100000];
-    const prices = allProducts.map((p) => p.price);
-    return [Math.floor(Math.min(...prices)), Math.ceil(Math.max(...prices))];
-  }, [allProducts]);
-
-  // Init price range once products load
+  // Debounce search query to prevent aggressive API calls
   useEffect(() => {
-    if (allProducts.length > 0) {
-      setPriceRange([globalMin, globalMax]);
-    }
-  }, [globalMin, globalMax, allProducts.length]);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
-  const suggestions = useMemo(
-    () => searchQuery.length > 0
-      ? allProducts.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 6)
-      : [],
-    [allProducts, searchQuery]
-  );
+  // Debounce price range to prevent rate limiting backend when sliding
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedPriceRange(priceRange);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [priceRange]);
 
   useEffect(() => {
     if (categoryFromUrl) {
-      setActiveCategory(categoryFromUrl);
-      setSearchQuery("");
+      setActiveCategory(categoryFromUrl.charAt(0).toUpperCase() + categoryFromUrl.slice(1));
     }
   }, [categoryFromUrl]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeCategory, searchQuery, sortBy, priceRange]);
+  }, [activeCategory, debouncedSearch, sortBy, debouncedPriceRange]);
 
-  const searchFiltered = searchQuery
-    ? allProducts.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : allProducts;
+  const { data: serverProducts = [], isLoading } = useProducts({
+    category: activeCategory,
+    search: debouncedSearch,
+    minPrice: debouncedPriceRange[0] !== globalMin ? debouncedPriceRange[0] : undefined,
+    maxPrice: debouncedPriceRange[1] !== globalMax ? debouncedPriceRange[1] : undefined,
+    sort: sortBy
+  });
 
-  const existingCats = new Set(searchFiltered.map((p) => p.category));
-  const categories = CATEGORY_ORDER.filter((c) => c === "All" || existingCats.has(c));
-  existingCats.forEach((c) => { if (!categories.includes(c)) categories.push(c); });
+  const categories = CATEGORY_ORDER;
 
-  const filtered = useMemo(() => {
-    let items = activeCategory === "All" ? searchFiltered : searchFiltered.filter((p) => p.category === activeCategory);
-    items = items.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
-    return items;
-  }, [searchFiltered, activeCategory, priceRange]);
-
-  const sortedProducts = useMemo(() => {
-    let items = activeCategory === "All" && sortBy === "default" ? shuffleArray(filtered) : [...filtered];
-    if (sortBy === "price-asc") items.sort((a, b) => a.price - b.price);
-    else if (sortBy === "price-desc") items.sort((a, b) => b.price - a.price);
-    else if (sortBy === "newest") items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    else if (sortBy === "name-asc") items.sort((a, b) => a.name.localeCompare(b.name));
-    else if (sortBy === "name-desc") items.sort((a, b) => b.name.localeCompare(a.name));
-    return items;
-  }, [filtered, activeCategory, sortBy]);
-
-  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
-  const paginatedProducts = sortedProducts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(serverProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = serverProducts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const activeFilterCount = (activeCategory !== "All" ? 1 : 0) + (priceRange[0] > globalMin || priceRange[1] < globalMax ? 1 : 0);
 
@@ -140,27 +124,8 @@ const Products = () => {
               placeholder="Search service providers..."
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setActiveCategory("All"); }}
-              onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               className="w-full pl-10 pr-4 py-2.5 border border-border bg-background text-foreground font-body text-sm focus:outline-none focus:border-foreground transition-colors"
             />
-            {showSuggestions && searchQuery.length > 0 && (
-              <div className="absolute z-50 top-full left-0 w-full bg-background border border-border shadow-lg max-h-64 overflow-y-auto">
-                {suggestions.length === 0 ? (
-                  <p className="px-4 py-3 font-body text-sm text-muted-foreground">No results found</p>
-                ) : (
-                  suggestions.map((p) => (
-                    <Link key={p.id} to={`/product/${p.id}`} className="flex items-center gap-3 px-4 py-2 hover:bg-secondary transition-colors">
-                      <img src={resolveImage(p.image_url)} alt={p.name} className="w-10 h-10 object-cover bg-secondary" />
-                      <div>
-                        <p className="font-body text-sm text-foreground">{p.name}</p>
-                        <p className="font-body text-xs text-muted-foreground">KSH {p.price.toLocaleString()}</p>
-                      </div>
-                    </Link>
-                  ))
-                )}
-              </div>
-            )}
           </div>
 
           {/* Filter toggle + Sort */}
@@ -291,7 +256,7 @@ const Products = () => {
         {/* Results count */}
         <div className="flex items-center justify-between mb-6">
           <p className="font-body text-sm text-muted-foreground">
-            {sortedProducts.length} {sortedProducts.length === 1 ? "item" : "items"}
+            {serverProducts.length} {serverProducts.length === 1 ? "item" : "items"}
             {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
@@ -317,7 +282,7 @@ const Products = () => {
           <div className="flex justify-center py-20">
             <div className="w-8 h-8 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : sortedProducts.length === 0 ? (
+        ) : serverProducts.length === 0 ? (
           <div className="text-center py-20">
             <p className="font-body text-lg text-muted-foreground mb-4">No providers match your filters</p>
             <button onClick={clearAllFilters} className="px-6 py-2 border border-foreground text-foreground font-body text-sm hover:bg-primary hover:text-primary-foreground transition-colors">
@@ -329,30 +294,41 @@ const Products = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {paginatedProducts.map((product) => (
                 <div key={product.id} className="group cursor-pointer">
-                  <Link to={`/product/${product.id}`}>
-                    <div className="relative aspect-square bg-secondary overflow-hidden mb-3">
+                  <Link to={`/product/${product.id}`} className="block h-full">
+                    <div className="relative aspect-square bg-secondary overflow-hidden mb-3 border border-border">
                       {isNewProduct(product.created_at) && (
                         <span className="absolute top-2 left-2 z-10 bg-foreground text-background font-body text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5">
                           New
                         </span>
                       )}
-                      <img
-                        src={resolveImage(product.image_url)}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted transition-transform duration-500 group-hover:scale-105">
+                           <span className="text-4xl text-muted-foreground/30 font-display font-bold uppercase">
+                             {product.name.charAt(0)}
+                           </span>
+                        </div>
+                      )}
                     </div>
-                    <h3 className="font-body text-sm font-medium text-foreground">{product.name}</h3>
-                    <p className="font-body text-xs text-muted-foreground">{product.subtitle}</p>
-                    <p className="font-body text-sm font-semibold text-foreground mt-1">KSH {product.price.toLocaleString()}</p>
+                    <div className="flex flex-col h-full">
+                      <h3 className="font-body text-sm font-bold text-foreground line-clamp-1">{product.name}</h3>
+                      <p className="font-body text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                        📍 {product.subtitle}
+                      </p>
+                      {product.description && (
+                        <p className="font-body text-xs text-muted-foreground mt-2 line-clamp-2">
+                          {product.description}
+                        </p>
+                      )}
+                      <p className="font-body text-sm font-semibold text-foreground mt-3">From KSH {product.price?.toLocaleString()}</p>
+                    </div>
                   </Link>
-                  <button
-                    onClick={() => addItem({ id: product.id, name: product.name, subtitle: product.subtitle, price: product.price, image: resolveImage(product.image_url) })}
-                    className="mt-2 border border-foreground text-foreground px-4 py-1.5 font-body text-xs font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
-                  >
-                    Add to Bag
-                  </button>
                 </div>
               ))}
             </div>

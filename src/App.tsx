@@ -16,6 +16,7 @@ const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Profile = lazy(() => import("./pages/Profile"));
 const CustomPage = lazy(() => import("./pages/CustomPage"));
+const ProviderDashboard = lazy(() => import("./pages/ProviderDashboard"));
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/service-provider" element={<ProviderDashboard />} />
               <Route path="/page/:slug" element={<CustomPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

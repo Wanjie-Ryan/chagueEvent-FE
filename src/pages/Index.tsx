@@ -32,7 +32,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <CartSidebar />
-      <NewsletterModal />
+      {/* <NewsletterModal /> */}
       <main>
         <HeroBanner />
         <ScrollReveal>
@@ -62,9 +62,9 @@ const Index = () => {
         <ScrollReveal>
           <FeaturedArtist />
         </ScrollReveal>
-        <ScrollReveal>
+        {/* <ScrollReveal>
           <ShopBySport />
-        </ScrollReveal>
+        </ScrollReveal> */}
         <SeasonalCampaign />
         <ScrollReveal>
           <CulturePreview />
@@ -72,15 +72,15 @@ const Index = () => {
         <ScrollReveal>
           <UpcomingEventsSection />
         </ScrollReveal>
-        <ScrollReveal>
+        {/* <ScrollReveal>
           <Spotlight />
-        </ScrollReveal>
+        </ScrollReveal> */}
         <ScrollReveal>
           <MerchandiseSection />
         </ScrollReveal>
-        <ScrollReveal>
+        {/* <ScrollReveal>
           <GlassesSection />
-        </ScrollReveal>
+        </ScrollReveal> */}
       </main>
       <Footer />
     </div>

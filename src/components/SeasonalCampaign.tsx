@@ -10,7 +10,7 @@ const SeasonalCampaign = () => {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      video.play().catch(() => {});
+      video.play().catch(() => { });
       setIsPlaying(true);
     } else {
       video.pause();
@@ -22,15 +22,15 @@ const SeasonalCampaign = () => {
     <section className="relative w-full overflow-hidden">
       <div className="relative h-[60vh] md:h-[70vh]">
         <video
-           ref={videoRef}
-           src="/videos/seasonal-banner.mp4"
-           muted
-           loop
-           autoPlay
-           playsInline
-           preload="metadata"
-           className="h-full w-full object-cover"
-         />
+          ref={videoRef}
+          src="/videos/seasonal-banner.mp4"
+          muted
+          loop
+          autoPlay
+          playsInline
+          preload="metadata"
+          className="h-full w-full object-cover"
+        />
 
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
@@ -50,7 +50,7 @@ const SeasonalCampaign = () => {
             to="/products"
             className="bg-primary-foreground text-primary px-8 py-3 rounded-full font-body text-sm font-medium hover:bg-primary-foreground/90 transition-colors"
           >
-            Shop the Collection
+            Customize Your Collection
           </Link>
         </div>
 

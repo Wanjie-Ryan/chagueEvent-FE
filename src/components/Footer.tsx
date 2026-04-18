@@ -8,26 +8,20 @@ import { z } from "zod";
 import logoImg from "@/assets/logo.png";
 
 const footerLinkMap: Record<string, string> = {
-  "New Releases": "/products",
-  "Men": "/products?category=Men",
-  "Women": "/products?category=Women",
-  "Kids": "/products?category=Kids",
-  "Sale": "/products?category=Sale",
-  "SNKRS": "/products?category=Sneakers",
-  "Order Status": "/profile",
-  "Shipping & Delivery": "/page/shipping-delivery",
-  "Returns": "/page/returns",
+  "All Services": "/products",
+  "Photography": "/products?category=photography",
+  "Catering": "/products?category=catering",
+  "Decor": "/products?category=decor",
+  "Venues": "/products?category=venue",
+  "Entertainment": "/products?category=entertainment",
+  "Partner With Us": "/auth",
   "Contact Us": "/page/contact",
-  "News": "/blog",
-  "Careers": "/page/careers",
-  "Sustainability": "/page/sustainability",
-  "Investors": "/page/investors",
 };
 
 const defaultFooterLinks: Record<string, string[]> = {
-  "Shop": ["New Releases", "Men", "Women", "Kids", "Sale", "SNKRS"],
-  "Help": ["Order Status", "Shipping & Delivery", "Returns", "Contact Us"],
-  "About": ["News", "Careers", "Sustainability", "Investors"],
+  "Explore": ["All Services", "Photography", "Catering", "Decor", "Venues", "Entertainment"],
+  "Support": ["Contact Us"],
+  "Company": ["Partner With Us"],
 };
 
 const socialPlatforms = [
@@ -45,7 +39,7 @@ const Footer = () => {
   const [subscribing, setSubscribing] = useState(false);
 
   const brandName = settings?.brand?.name || "STYLE N TUNES";
-  const tagline = settings?.brand?.tagline || "Where style meets rhythm. Bold streetwear for the culture.";
+  const tagline = settings?.brand?.tagline || "Where style meets rhythm. Plan your events with confidence, for the culture.";
   const footerSettings = settings?.footer;
   const columns = footerSettings?.columns || defaultFooterLinks;
   const copyright = footerSettings?.copyright || "© 2026 Style n Tunes. All Rights Reserved.";
@@ -54,7 +48,6 @@ const Footer = () => {
     { label: "Terms of Use", url: "/page/terms-of-use" },
   ];
 
-  // Read social links from admin-configurable settings
   const socialLinks = settings?.social_links as Record<string, string> | undefined;
 
   const activeSocials = socialPlatforms.filter(
@@ -70,7 +63,6 @@ const Footer = () => {
     }
     setSubscribing(true);
     try {
-      // Use drop_notifications as a lightweight subscriber store (drop_id is required, use a sentinel)
       toast({ title: "Thanks for subscribing!", description: "You'll hear from us soon." });
       setEmail("");
     } catch {
@@ -82,7 +74,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-primary text-primary-foreground">
-      {/* Newsletter Banner */}
+      {/* Newsletter Banner - Commented out as requested */}
+      {/* 
       <div className="border-b border-primary-foreground/10">
         <div className="mx-auto max-w-[1920px] px-6 lg:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
@@ -111,8 +104,9 @@ const Footer = () => {
           </form>
         </div>
       </div>
+      */}
 
-      <div className="mx-auto max-w-[1920px] px-6 lg:px-12 py-12">
+      <div className="mx-auto max-w-[1920px] px-6 lg:px-12 py-12 border-t border-primary-foreground/10">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
@@ -122,7 +116,6 @@ const Footer = () => {
             <p className="font-body text-sm text-primary-foreground/60 leading-relaxed mb-6">
               {tagline}
             </p>
-            {/* Social Icons — driven by admin settings */}
             {activeSocials.length > 0 && (
               <div className="flex items-center gap-4">
                 {activeSocials.map((social) => (
@@ -139,7 +132,6 @@ const Footer = () => {
                 ))}
               </div>
             )}
-            {/* Fallback when no social links configured */}
             {activeSocials.length === 0 && (
               <div className="flex items-center gap-4">
                 {socialPlatforms.slice(0, 3).map((social) => (
@@ -185,7 +177,7 @@ const Footer = () => {
               ABOUT STYLE N TUNES
             </h4>
             <p className="font-body text-xs text-primary-foreground/60 leading-relaxed">
-              Style N Tunes was founded by <span className="text-primary-foreground/80 font-medium">Ryan Gitau</span> and co-founded by <span className="text-primary-foreground/80 font-medium">Stephanie Wangui</span> with a vision to merge bold streetwear with the rhythm of culture. Born in Nairobi, the brand celebrates self-expression through fashion and music — creating a movement where style and sound are inseparable.
+              Style N Tunes was founded with a vision to merge spectacular event experiences with the rhythm of culture. Born in Nairobi, we celebrate self-expression and community — providing the premium platform where incredible talent and unforgettable events come together.
             </p>
           </div>
         </div>
@@ -195,7 +187,7 @@ const Footer = () => {
             {copyright}
           </p>
           <div className="flex gap-6">
-            {bottomLinks.map((link: any) => (
+            {bottomLinks.map((link: { label: string; url: string }) => (
               <Link
                 key={link.label}
                 to={link.url || "#"}

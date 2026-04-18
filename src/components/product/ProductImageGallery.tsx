@@ -34,12 +34,20 @@ const ProductImageGallery = ({ images, productName, activeIndex, onIndexChange }
       )}
 
       {/* Main Image */}
-      <div className="relative flex-1 aspect-[4/5] bg-secondary overflow-hidden rounded-xl group">
-        <img
-          src={images[activeIndex]}
-          alt={productName}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+      <div className="relative flex-1 aspect-[4/5] bg-secondary overflow-hidden rounded-xl group border border-border">
+        {images.length > 0 && images[activeIndex] ? (
+          <img
+            src={images[activeIndex]}
+            alt={productName}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-muted transition-transform duration-500 group-hover:scale-105">
+            <span className="text-8xl text-muted-foreground/30 font-display font-bold uppercase">
+             {productName.charAt(0)}
+            </span>
+          </div>
+        )}
         {hasMultiple && (
           <>
             <button

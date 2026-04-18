@@ -1,55 +1,20 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import {
-  LogOut, ShoppingBag, Package, Flame, Music, FileText, CalendarDays,
-  Camera, BarChart3, Tag, Users, Warehouse, File, Truck, RotateCcw,
-  ShoppingCart, Image, Shield,
-} from "lucide-react";
-import OrdersManager from "@/components/admin/OrdersManager";
-import DropsManager from "@/components/admin/DropsManager";
-import ArtistsManager from "@/components/admin/ArtistsManager";
-import BlogManager from "@/components/admin/BlogManager";
-import EventsManager from "@/components/admin/EventsManager";
-import LookbooksManager from "@/components/admin/LookbooksManager";
-import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
-import PromoCodesManager from "@/components/admin/PromoCodesManager";
-import CustomersManager from "@/components/admin/CustomersManager";
-import InventoryManager from "@/components/admin/InventoryManager";
-import SiteSettingsManager from "@/components/admin/SiteSettingsManager";
-import PagesManager from "@/components/admin/PagesManager";
+import { LogOut, LayoutDashboard, Users, UserCheck, Package } from "lucide-react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
-import ProductsManager from "@/components/admin/ProductsManager";
-import ShippingManager from "@/components/admin/ShippingManager";
-import ReturnsManager from "@/components/admin/ReturnsManager";
-import AbandonedCartsManager from "@/components/admin/AbandonedCartsManager";
-import MediaLibrary from "@/components/admin/MediaLibrary";
-import RolesManager from "@/components/admin/RolesManager";
-import { Settings, LayoutDashboard } from "lucide-react";
+import ProvidersManager from "@/components/admin/ProvidersManager";
+import ClientsManager from "@/components/admin/ClientsManager";
+import ListingsManager from "@/components/admin/ListingsManager";
 import logoImg from "@/assets/logo.png";
 
-type TabKey = "dashboard" | "analytics" | "products" | "inventory" | "orders" | "customers" | "promos" | "drops" | "artists" | "blog" | "events" | "lookbooks" | "pages" | "shipping" | "returns" | "abandoned" | "media" | "roles" | "settings";
+type TabKey = "dashboard" | "providers" | "clients" | "listings";
 
-const TABS: { key: TabKey; label: string; icon: typeof BarChart3 }[] = [
+const TABS: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { key: "analytics", label: "Analytics", icon: BarChart3 },
-  { key: "products", label: "Products", icon: Package },
-  { key: "inventory", label: "Inventory", icon: Warehouse },
-  { key: "orders", label: "Orders", icon: ShoppingBag },
-  { key: "customers", label: "Customers", icon: Users },
-  { key: "shipping", label: "Shipping", icon: Truck },
-  { key: "returns", label: "Returns", icon: RotateCcw },
-  { key: "promos", label: "Promos", icon: Tag },
-  { key: "drops", label: "Drops", icon: Flame },
-  { key: "artists", label: "Artists", icon: Music },
-  { key: "blog", label: "Blog", icon: FileText },
-  { key: "events", label: "Events", icon: CalendarDays },
-  { key: "lookbooks", label: "Lookbooks", icon: Camera },
-  { key: "pages", label: "Pages", icon: File },
-  { key: "abandoned", label: "Abandoned", icon: ShoppingCart },
-  { key: "media", label: "Media", icon: Image },
-  { key: "roles", label: "Roles", icon: Shield },
-  { key: "settings", label: "Settings", icon: Settings },
+  { key: "providers", label: "Providers", icon: UserCheck },
+  { key: "clients", label: "Clients", icon: Users },
+  { key: "listings", label: "Listings", icon: Package },
 ];
 
 const Admin = () => {
@@ -80,24 +45,9 @@ const Admin = () => {
   const renderTab = () => {
     switch (activeTab) {
       case "dashboard": return <AdminDashboard onNavigate={setActiveTab} />;
-      case "analytics": return <AnalyticsDashboard />;
-      case "inventory": return <InventoryManager />;
-      case "orders": return <OrdersManager />;
-      case "customers": return <CustomersManager />;
-      case "promos": return <PromoCodesManager />;
-      case "drops": return <DropsManager />;
-      case "artists": return <ArtistsManager />;
-      case "blog": return <BlogManager />;
-      case "events": return <EventsManager />;
-      case "lookbooks": return <LookbooksManager />;
-      case "pages": return <PagesManager />;
-      case "settings": return <SiteSettingsManager />;
-      case "products": return <ProductsManager />;
-      case "shipping": return <ShippingManager />;
-      case "returns": return <ReturnsManager />;
-      case "abandoned": return <AbandonedCartsManager />;
-      case "media": return <MediaLibrary />;
-      case "roles": return <RolesManager />;
+      case "providers": return <ProvidersManager />;
+      case "clients": return <ClientsManager />;
+      case "listings": return <ListingsManager />;
     }
   };
 
@@ -106,12 +56,12 @@ const Admin = () => {
       <header className="sticky top-0 z-40 bg-background border-b border-border">
         <div className="mx-auto flex h-14 sm:h-16 max-w-[1920px] items-center justify-between px-4 sm:px-6 lg:px-12">
           <div className="flex items-center gap-3">
-            <img src={logoImg} alt="Style N Tunes" className="h-7 sm:h-8 w-auto" />
-            <span className="font-display text-sm sm:text-base font-bold text-muted-foreground">ADMIN</span>
+            <img src={logoImg} alt="Chagua Event" className="h-7 sm:h-8 w-auto filter invert dark:invert-0" />
+            <span className="font-display text-sm sm:text-base font-bold text-muted-foreground tracking-widest uppercase">ADMIN</span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <span className="font-body text-xs text-muted-foreground hidden sm:block truncate max-w-[150px]">{user.email}</span>
-            <button onClick={() => navigate("/")} className="font-body text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors">Store</button>
+          <div className="flex items-center gap-4">
+            <span className="font-body text-xs text-muted-foreground hidden sm:block truncate">{user.username || user.userId}</span>
+            <button onClick={() => navigate("/")} className="font-body text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors">Directory</button>
             <button onClick={() => signOut()} className="text-muted-foreground hover:text-foreground transition-colors"><LogOut size={18} /></button>
           </div>
         </div>

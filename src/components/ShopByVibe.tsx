@@ -3,32 +3,32 @@ import { motion } from "framer-motion";
 
 const vibes = [
   {
-    name: "Chill",
-    emoji: "😎",
-    description: "Relaxed fits, earth tones, easy style",
+    name: "Photography",
+    emoji: "📸",
+    description: "Capture the perfect moments, from candid to portraits",
     gradient: "from-foreground/5 to-secondary",
-    query: "?vibe=chill",
+    query: "?category=photography",
   },
   {
-    name: "Hype",
-    emoji: "🔥",
-    description: "Bold drops, loud prints, statement pieces",
+    name: "Catering",
+    emoji: "🍽️",
+    description: "Delightful menus, stunning presentations, exquisite taste",
     gradient: "from-foreground/10 to-secondary",
-    query: "?vibe=hype",
+    query: "?category=catering",
   },
   {
-    name: "Late Night",
-    emoji: "🌙",
-    description: "Dark tones, sleek silhouettes, after-hours energy",
+    name: "Decor",
+    emoji: "✨",
+    description: "Transforming venues into magical, unforgettable spaces",
     gradient: "from-foreground/15 to-secondary",
-    query: "?vibe=late-night",
+    query: "?category=decor",
   },
   {
-    name: "Street",
-    emoji: "🛹",
-    description: "Raw, authentic, straight from the block",
+    name: "Entertainment",
+    emoji: "🎶",
+    description: "DJs, bands, artists to keep the energy high",
     gradient: "from-foreground/8 to-secondary",
-    query: "?vibe=street",
+    query: "?category=entertainment",
   },
 ];
 
@@ -36,12 +36,12 @@ const ShopByVibe = () => {
   return (
     <section className="mx-auto max-w-[1920px] px-6 lg:px-12 py-16">
       <div className="mb-8">
-        <p className="font-body text-xs tracking-[0.3em] text-muted-foreground uppercase mb-2">Shop by</p>
+        <p className="font-body text-xs tracking-[0.3em] text-muted-foreground uppercase mb-2">Browse by</p>
         <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground uppercase tracking-tight">
-          Vibe
+          Category
         </h2>
         <p className="font-body text-sm text-muted-foreground mt-1">
-          Find your mood, find your fit.
+          Find exactly what you need for your event.
         </p>
       </div>
 

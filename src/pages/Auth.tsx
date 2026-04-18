@@ -32,7 +32,7 @@ const Auth = () => {
         if (role === "admin") {
           navigate("/admin");
         } else if (role === "provider") {
-          navigate("/admin"); // For now, providers go to a similar dashboard or profile
+          navigate("/service-provider");
         } else {
           navigate("/");
         }
