@@ -63,7 +63,7 @@ const AllProductsSection = () => {
                 {product.subtitle}
               </p>
               <p className="font-display text-sm font-semibold text-foreground">
-                KSh {product.price.toLocaleString()}
+                Ksh {product.price.toLocaleString()}
               </p>
             </div>
           </Link>
